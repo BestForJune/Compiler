@@ -1,12 +1,12 @@
 // able to hold four types of data
 public class data {
     // constants works as type tag
-    public static final int INT = 1;
-    public static final int SHORT = 2;
-    public static final int FLOAT = 3;
-    public static final int CHAR = 4;
+    private static final int INT = 1;
+    private static final int SHORT = 2;
+    private static final int FLOAT = 3;
+    private static final int CHAR = 4;
 
-    public int typeTag; // indicate which kind of data is hold as above
+    private int typeTag; // indicate which kind of data is hold as above
     private int intData;
     private short shortData;
     private float floatData;
