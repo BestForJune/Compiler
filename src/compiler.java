@@ -11,8 +11,9 @@ public class compiler {
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
         DataOutputStream output = new DataOutputStream(new FileOutputStream(args[1]));
-        Map<String, Integer> symbolTable; // key: symbol; value: offset on the stack
+        Map<String, Integer> symbolTable = new HashMap<String, Integer>(); // key: symbol; value: offset on the stack
         byteCode bc = new byteCode(output);
+        String flabel = "main"; //label of current subroutine
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -35,6 +36,7 @@ public class compiler {
                     if(dataType.equals("float")) {
                         bc.pushf(0);
                     }
+                    symbolTable.put(flabel + symbol, bc.getStackPointer());
                     // System.out.println(symbol);
                     // System.out.println(dataType);
                     continue;
@@ -48,6 +50,7 @@ public class compiler {
                     String label = matcher.group(1);
                     continue;
                 }
+
                 if(line.matches("subr[A-Za-z 0-9]+")) { //unfinished
                     Pattern pattern = Pattern.compile("subr ([0-9]+) ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -55,7 +58,8 @@ public class compiler {
                         System.out.println("subr Error!");
                     }
                     int cnt = Integer.parseInt(matcher.group(1));
-                    String flabel = matcher.group(2);
+                    flabel = matcher.group(2);
+
                     // System.out.println(cnt);
                     // System.out.println(flabel);
                     continue;
@@ -122,7 +126,7 @@ public class compiler {
                     int cnt = Integer.parseInt(allinfor[1]);
                     for (int i = 2; i < allinfor.length - 1; i++)
                         vara.add(allinfor[i]);
-                    String flabel = allinfor[allinfor.length - 1];
+                    String flabelCalled = allinfor[allinfor.length - 1];
                     continue;
                 }
                 if (line.matches("callr .*?")){
@@ -131,7 +135,7 @@ public class compiler {
                     int cnt = Integer.parseInt(allinfor[1]);
                     for (int i = 2; i < allinfor.length - 1; i++)
                         vara.add(allinfor[i]);
-                    String flabel = allinfor[allinfor.length - 1];
+                    String flabelCalled = allinfor[allinfor.length - 1];
                     continue;
                 }
                 if (line.matches("push[a-z] .*?")){

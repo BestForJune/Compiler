@@ -19,6 +19,10 @@ public class byteCode {
         return programCounter;
     }
 
+    public int getStackPointer() {
+        return stackPointer;
+    }
+
     public void cmpe() throws IOException {
         output.writeByte(132);
         programCounter++;
