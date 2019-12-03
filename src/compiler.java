@@ -166,15 +166,15 @@ public class compiler {
                     String var = matcher.group(1);//variable
                     continue;
                  }
-                 if (line.matches("peek .*?")){
+                if (line.matches("peek .*?")){
                     Pattern pattern = Pattern.compile("peek ([a-zA-Z0-9]+) ([-0-9]+)");
-                     Matcher matcher = pattern.matcher(line);
-                     if(!matcher.find()) {
+                    Matcher matcher = pattern.matcher(line);
+                    if(!matcher.find()) {
                          System.out.println("popv Error!");
-                     }
-                     String var = matcher.group(1);//variable
-                     int val = Integer.parseInt(matcher.group(2));
-                     continue;
+                    }
+                    String var = matcher.group(1);//variable
+                    int val = Integer.parseInt(matcher.group(2));
+                    continue;
                  }
                 if (line.matches("poke .*?")){
                     Pattern pattern = Pattern.compile("poke ([-0-9]+) ([a-zA-Z0-9]+)");
@@ -185,20 +185,27 @@ public class compiler {
                      String var = matcher.group(2);//variable
                      int val = Integer.parseInt(matcher.group(1));
                      continue;
-                 }
-                 if (line.matches("swp")){
-                     continue;
-                 }
-                 if (line.matches("add")){
+                }
+                if (line.matches("swp")){
                     continue;
                 }
+                if (line.matches("add")){
+
+                    continue;
+                }
+
                 if (line.matches("sub")){
+                    bc.sub();
                     continue;
                 }
+
                 if (line.matches("mul")){
+                    bc.mul();
                     continue;
                 }
+
                 if (line.matches("div")){
+                    bc.div();
                     continue;
                 }
             }
