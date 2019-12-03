@@ -196,20 +196,16 @@ public class compiler {
                     continue;
                  }
                 if (line.matches("peek .*?")){
-                    Pattern pattern = Pattern.compile("peek ([a-zA-Z0-9]+) ([-0-9]+)");
-                    Matcher matcher = pattern.matcher(line);
-                    if(!matcher.find()) {
-                         System.out.println("popv Error!");
-                    }
-                    String var = matcher.group(1);//variable
-                    int val = Integer.parseInt(matcher.group(2));
+                    String[] allinfor = line.split(" ");
+                    String var = allinfor[1]; // variable
+                    int val = Integer.parseInt(allinfor[2]);
                     continue;
                  }
                 if (line.matches("poke .*?")){
                     Pattern pattern = Pattern.compile("poke ([-0-9]+) ([a-zA-Z0-9]+)");
                      Matcher matcher = pattern.matcher(line);
                      if(!matcher.find()) {
-                         System.out.println("popv Error!");
+                         System.out.println("poke Error!");
                      }
                      String var = matcher.group(2);//variable
                      int val = Integer.parseInt(matcher.group(1));
