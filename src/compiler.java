@@ -1,7 +1,8 @@
 //import javafx.css.Match;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
+// import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,17 +26,17 @@ public class compiler {
                     String symbol = matcher.group(1);
                     String dataType = matcher.group(2);
 //                    symbolTable.put(symbol, )
-                    // if(dataType.equals("short")) {
-                    //     bc.pushs((short) 0);
-                    // }
-                    // if(dataType.equals("int")) {
-                    //     bc.pushi(0);
-                    // }
-                    // if(dataType.equals("float")) {
-                    //     bc.pushf(0);
-                    // }
-                    System.out.println(symbol);
-                    System.out.println(dataType);
+                    if(dataType.equals("short")) {
+                        bc.pushs((short) 0);
+                    }
+                    if(dataType.equals("int")) {
+                        bc.pushi(0);
+                    }
+                    if(dataType.equals("float")) {
+                        bc.pushf(0);
+                    }
+                    // System.out.println(symbol);
+                    // System.out.println(dataType);
                     continue;
                 }
                 if(line.matches("lab[A-Za-z]+")){
@@ -54,8 +55,8 @@ public class compiler {
                     }
                     int cnt = Integer.parseInt(matcher.group(1));
                     String flabel = matcher.group(2);
-                    System.out.println(cnt);
-                    System.out.println(flabel);
+                    // System.out.println(cnt);
+                    // System.out.println(flabel);
                     continue;
                 }
                 if (line.matches("ret")){
@@ -71,7 +72,7 @@ public class compiler {
                         System.out.println("printv Error!");
                     }
                     String var = matcher.group(1);
-                    System.out.println(var);
+                    // System.out.println(var);
                     continue;
                 }
                 if (line.matches("print([a-z]+) ([A-Za-z0-9]+)")){
@@ -82,8 +83,6 @@ public class compiler {
                     }
                     String type = matcher.group(1);
                     String literal = matcher.group(2);
-                    System.out.println(type);
-                    System.out.println(literal);
                     continue;
                 }
                 if (line.matches("jmp [a-zA-Z0-9]+")){
@@ -93,7 +92,6 @@ public class compiler {
                         System.out.println("jmp Error!");
                     }
                     String label = matcher.group(1);
-                    System.out.println(label);
                     continue;
                 }
                 if (line.matches("jmpc [a-zA-Z0-9]+")){
@@ -103,7 +101,6 @@ public class compiler {
                         System.out.println("jmpc Error!");
                     }
                     String label = matcher.group(1);
-                    System.out.println(label);
                     continue;
                 }
                 if (line.matches("cmpe")){
@@ -112,33 +109,87 @@ public class compiler {
                 if (line.matches("cmplt")){
                     continue;
                 }
-                if (line.matches("call .*?")){ //????
-                    // Pattern pattern = Pattern.compile("([0-9]+)(( [a-zA-Z0-9]+)+)");
-                    // Matcher matcher = pattern.matcher(line);
-                    // if(!matcher.find()) {
-                    //     System.out.println("call Error!");
-                    // }
-                    // String var = matcher.group(1);
-                    // System.out.println(var);
-                    // for (int i = 1; i <= matcher.groupCount(); i++)
-                    //     System.out.println(matcher.group(i));
-                    String[] test = line.split(" ");
-                    System.out.println(Arrays.toString(test));
+                if (line.matches("call .*?")){ 
+                    String[] allinfor = line.split(" ");
+                    List<String> vara = new ArrayList<String>();
+                    int cnt = Integer.parseInt(allinfor[1]);
+                    for (int i = 2; i < allinfor.length - 1; i++)
+                        vara.add(allinfor[i]);
+                    String flabel = allinfor[allinfor.length - 1];
                     continue;
                 }
-                if (line.matches("callr .*?")){ //????
-                    Pattern pattern = Pattern.compile("([0-9]+) ([a-zA-Z0-9]+)+");
+                if (line.matches("callr .*?")){
+                    String[] allinfor = line.split(" ");
+                    List<String> vara = new ArrayList<String>();
+                    int cnt = Integer.parseInt(allinfor[1]);
+                    for (int i = 2; i < allinfor.length - 1; i++)
+                        vara.add(allinfor[i]);
+                    String flabel = allinfor[allinfor.length - 1];
+                    continue;
+                }
+                if (line.matches("push[a-z] .*?")){
+                   Pattern pattern = Pattern.compile("push([a-z]) ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
-                        System.out.println("callr Error!");
+                        System.out.println("push Error!");
                     }
-                    String var = matcher.group(1);
-                    System.out.println(var);
+                    String type = matcher.group(1);
+                    String val = matcher.group(2);
                     continue;
                 }
-                // if (line.matches("push[a-z] [a-zA-Z0-9]+")){
-
-                // }
+                if (line.matches("popm .*?")){
+                    Pattern pattern = Pattern.compile("popm ([0-9]+)");
+                     Matcher matcher = pattern.matcher(line);
+                     if(!matcher.find()) {
+                         System.out.println("popm Error!");
+                     }
+                     int val = Integer.parseInt(matcher.group(1));
+                     continue;
+                 }
+                if (line.matches("popv .*?")){
+                    Pattern pattern = Pattern.compile("popv ([a-zA-Z0-9]+)");
+                    Matcher matcher = pattern.matcher(line);
+                    if(!matcher.find()) {
+                        System.out.println("popv Error!");
+                    }
+                    String var = matcher.group(1);//variable
+                    continue;
+                 }
+                 if (line.matches("peek .*?")){
+                    Pattern pattern = Pattern.compile("peek ([a-zA-Z0-9]+) ([-0-9]+)");
+                     Matcher matcher = pattern.matcher(line);
+                     if(!matcher.find()) {
+                         System.out.println("popv Error!");
+                     }
+                     String var = matcher.group(1);//variable
+                     int val = Integer.parseInt(matcher.group(2));
+                     continue;
+                 }
+                if (line.matches("poke .*?")){
+                    Pattern pattern = Pattern.compile("poke ([-0-9]+) ([a-zA-Z0-9]+)");
+                     Matcher matcher = pattern.matcher(line);
+                     if(!matcher.find()) {
+                         System.out.println("popv Error!");
+                     }
+                     String var = matcher.group(2);//variable
+                     int val = Integer.parseInt(matcher.group(1));
+                     continue;
+                 }
+                 if (line.matches("swp")){
+                     continue;
+                 }
+                 if (line.matches("add")){
+                    continue;
+                }
+                if (line.matches("sub")){
+                    continue;
+                }
+                if (line.matches("mul")){
+                    continue;
+                }
+                if (line.matches("div")){
+                    continue;
+                }
             }
         }
         catch (IOException e) {
