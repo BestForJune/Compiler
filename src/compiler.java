@@ -39,16 +39,17 @@ public class compiler {
                     // System.out.println(dataType);
                     continue;
                 }
-                if(line.matches("lab[A-Za-z]+")){
-                    Pattern pattern = Pattern.compile("([A-Za-z]+)");
+                if(line.matches("lab [A-Za-z]+")){
+                    Pattern pattern = Pattern.compile("lab ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("lab Error!");
                     }
+                    String label = matcher.group(1);
                     continue;
                 }
                 if(line.matches("subr[A-Za-z 0-9]+")) { //unfinished
-                    Pattern pattern = Pattern.compile("([0-9]+) ([A-Za-z]+)");
+                    Pattern pattern = Pattern.compile("subr ([0-9]+) ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("subr Error!");
@@ -59,14 +60,20 @@ public class compiler {
                     // System.out.println(flabel);
                     continue;
                 }
+                if (line.matches("retr .*?")){
+                    Pattern pattern = Pattern.compile("retr ([A-Za-z]+)");
+                    Matcher matcher = pattern.matcher(line);
+                    if(!matcher.find()) {
+                        System.out.println("retr Error!");
+                    }
+                    String var = matcher.group(1);
+                    continue;
+                }
                 if (line.matches("ret")){
                     continue;
                 }
-                if (line.matches("retr var")){
-                    continue;
-                }
-                if (line.matches("printv [a-zA-Z]+")){
-                    Pattern pattern = Pattern.compile("print([a-zA-Z]+)");
+                if (line.matches("printv .*?")){
+                    Pattern pattern = Pattern.compile("printv ([a-zA-Z]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("printv Error!");
@@ -75,7 +82,7 @@ public class compiler {
                     // System.out.println(var);
                     continue;
                 }
-                if (line.matches("print([a-z]+) ([A-Za-z0-9]+)")){
+                if (line.matches("print.*?")){
                     Pattern pattern = Pattern.compile("print([a-z]+) ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
@@ -85,8 +92,8 @@ public class compiler {
                     String literal = matcher.group(2);
                     continue;
                 }
-                if (line.matches("jmp [a-zA-Z0-9]+")){
-                    Pattern pattern = Pattern.compile("print([a-zA-Z0-9]+)");
+                if (line.matches("jmp .*?")){
+                    Pattern pattern = Pattern.compile("jmp ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("jmp Error!");
@@ -94,8 +101,8 @@ public class compiler {
                     String label = matcher.group(1);
                     continue;
                 }
-                if (line.matches("jmpc [a-zA-Z0-9]+")){
-                    Pattern pattern = Pattern.compile("print([a-zA-Z0-9]+)");
+                if (line.matches("jmpc .*?")){
+                    Pattern pattern = Pattern.compile("jmpc ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("jmpc Error!");
