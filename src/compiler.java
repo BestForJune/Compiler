@@ -145,6 +145,10 @@ public class compiler {
                     bc.cmplt();
                     continue;
                 }
+                if (line.matches("cmpgt")){
+                    bc.cmpgt();
+                    continue;
+                }
                 if (line.matches("call .*?")){ 
                     String[] allinfor = line.split(" ");
                     List<String> vara = new ArrayList<String>();
@@ -183,7 +187,7 @@ public class compiler {
                      continue;
                  }
                 if (line.matches("popv .*?")){
-                    Pattern pattern = Pattern.compile("popv ([a-zA-Z0-9]+)");
+                    Pattern pattern = Pattern.compile("popv ([a-zA-Z]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("popv Error!");
