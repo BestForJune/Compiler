@@ -2,7 +2,7 @@ subr 0 main
 decl a int
 pushi 0
 popv a
-call 1 a addtest
+call 1 a b c addtest
 ret
 subr 1 addtest
 decl result int
