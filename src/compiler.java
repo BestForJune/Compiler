@@ -202,14 +202,10 @@ public class compiler {
                     continue;
                  }
                 if (line.matches("poke .*?")){
-                    Pattern pattern = Pattern.compile("poke ([-0-9]+) ([a-zA-Z0-9]+)");
-                     Matcher matcher = pattern.matcher(line);
-                     if(!matcher.find()) {
-                         System.out.println("poke Error!");
-                     }
-                     String var = matcher.group(2);//variable
-                     int val = Integer.parseInt(matcher.group(1));
-                     continue;
+                    String[] allinfor = line.split(" ");
+                    String var = allinfor[2]; // variable
+                    int val = Integer.parseInt(allinfor[1]);
+                    continue;
                 }
                 if (line.matches("swp")){
                     bc.swp();
