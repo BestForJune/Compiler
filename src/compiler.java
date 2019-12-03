@@ -1,5 +1,6 @@
 //import javafx.css.Match;
 
+import javafx.util.Pair;
 import java.io.*;
 import java.util.*;
 // import java.util.Arrays;
@@ -11,8 +12,11 @@ public class compiler {
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
         DataOutputStream output = new DataOutputStream(new FileOutputStream(args[1]));
-        Map<String, Integer> symbolTable = new HashMap<String, Integer>(); // key: symbol; value: offset on the stack
         byteCode bc = new byteCode(output);
+
+        //Map symbolTable
+        // key: symbol; value: Pair <offset on the stack, data type>
+        Map<String, Pair<Integer, String>> symbolTable = new HashMap<>();
         String flabel = "main"; //label of current subroutine
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
@@ -36,11 +40,14 @@ public class compiler {
                     if(dataType.equals("float")) {
                         bc.pushf(0);
                     }
-                    symbolTable.put(flabel + symbol, bc.getStackPointer());
+                    symbolTable.put(flabel + symbol,
+                                    new Pair<>(bc.getStackPointer()  - bc.getfsp(),
+                                    dataType));
                     // System.out.println(symbol);
                     // System.out.println(dataType);
                     continue;
                 }
+
                 if(line.matches("lab [A-Za-z]+")){
                     Pattern pattern = Pattern.compile("lab ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -48,6 +55,7 @@ public class compiler {
                         System.out.println("lab Error!");
                     }
                     String label = matcher.group(1);
+                    symbolTable.put(flabel + label, new Pair<>(bc.getPC(), "int"));
                     continue;
                 }
 
@@ -83,9 +91,11 @@ public class compiler {
                         System.out.println("printv Error!");
                     }
                     String var = matcher.group(1);
+
                     // System.out.println(var);
                     continue;
                 }
+
                 if (line.matches("print.*?")){
                     Pattern pattern = Pattern.compile("print([a-z]+) ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -94,8 +104,21 @@ public class compiler {
                     }
                     String type = matcher.group(1);
                     String literal = matcher.group(2);
+                    if(type.equals("i")) {
+                        bc.pushi(Integer.parseInt(literal));
+                        bc.printi();
+                    }
+                    if(type.equals("s")) {
+                        bc.pushs(Short.parseShort(literal));
+                        bc.prints();
+                    }
+                    if(type.equals("f")) {
+                        bc.pushf(Float.parseFloat(literal));
+                        bc.printf();
+                    }
                     continue;
                 }
+
                 if (line.matches("jmp .*?")){
                     Pattern pattern = Pattern.compile("jmp ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -115,9 +138,11 @@ public class compiler {
                     continue;
                 }
                 if (line.matches("cmpe")){
+                    bc.cmpe();
                     continue;
                 }
                 if (line.matches("cmplt")){
+                    bc.cmplt();
                     continue;
                 }
                 if (line.matches("call .*?")){ 
@@ -187,10 +212,12 @@ public class compiler {
                      continue;
                 }
                 if (line.matches("swp")){
+                    bc.swp();
                     continue;
                 }
-                if (line.matches("add")){
 
+                if (line.matches("add")){
+                    bc.add();
                     continue;
                 }
 

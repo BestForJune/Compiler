@@ -23,6 +23,10 @@ public class byteCode {
         return stackPointer;
     }
 
+    public int getfsp () { // get top frame stack pointer
+        return frameStack.peek();
+    }
+
     public void cmpe() throws IOException {
         output.writeByte(132);
         programCounter++;
