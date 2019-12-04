@@ -1,5 +1,4 @@
-//import javafx.css.Match;
-
+import javafx.util.Pair;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-// import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,18 +16,24 @@ public class compiler {
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
         DataOutputStream output = new DataOutputStream(new FileOutputStream(args[1]));
-        byteCode bc = new byteCode();
+        byteCode bc = new byteCode(output);
 
         //Map symbolTable
         // key: symbol; value: Pair <offset on the stack, data type>
         Map<String, Pair<Integer, String>> symbolTable = new HashMap<>();
         // key: flabel; value: Pair <offset in bit code, count of variable>
-        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
+//        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
 
         // wait list of undefined jmp or call
         // Pair <flabel + label, byte offset>
         ArrayList<Pair<String, Integer>> waitList = new ArrayList<>();
         String flabel = "main"; //label of current subroutine
+
+        bc.pushi(268435456);
+        bc.pushi(285212672);
+        bc.pushi(16777216);
+        bc.call(3);
+        bc.halt();
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -69,7 +73,7 @@ public class compiler {
                         System.out.println("lab Error!");
                     }
                     String label = matcher.group(1);
-                    flabelTable.put(flabel + label, new Pair<>(bc.getPC(), 0));
+                    symbolTable.put(flabel + label, new Pair<>(bc.getPC(), "int"));
                     continue;
                 }
 
@@ -79,8 +83,8 @@ public class compiler {
                     if(!matcher.find()) {
                         System.out.println("subr Error!");
                     }
-                    int cnt = Integer.parseInt(matcher.group(1));
-                    flabel = matcher.group(2);
+//                    int cnt = Integer.parseInt(matcher.group(1));
+//                    flabel = matcher.group(2);
 
                     // System.out.println(cnt);
                     // System.out.println(flabel);
@@ -96,6 +100,9 @@ public class compiler {
                 //     continue;
                 // }
                 if (line.matches("ret")){
+                    bc.pushi(0);
+                    bc.popa(0);
+                    bc.ret();
                     continue;
                 }
 
@@ -129,22 +136,18 @@ public class compiler {
                 }
 
                 if (line.matches("print.*?")){
-                    Pattern pattern = Pattern.compile("print([a-z]+) ([A-Za-z]+)");
-                    Matcher matcher = pattern.matcher(line);
-                    if(!matcher.find()) {
-                        System.out.println("print Error!");
-                    }
-                    String type = matcher.group(1);
-                    String literal = matcher.group(2);
-                    if(type.equals("i")) {
+                    String[] allinfor = line.split(" ");
+                    String type = allinfor[0];
+                    String literal = allinfor[1];
+                    if(type.equals("printi")) {
                         bc.pushi(Integer.parseInt(literal));
                         bc.printi();
                     }
-                    if(type.equals("s")) {
+                    if(type.equals("prints")) {
                         bc.pushs(Short.parseShort(literal));
                         bc.prints();
                     }
-                    if(type.equals("f")) {
+                    if(type.equals("printf")) {
                         bc.pushf(Float.parseFloat(literal));
                         bc.printf();
                     }
@@ -180,7 +183,7 @@ public class compiler {
                     Pair pair = symbolTable.get(flabel + label);
                     if(pair == null) {
                         bc.pushi(0);
-                        waitList.add(new Pair<>(flabel + label, bc.getPC()));
+                        waitList.add(new Pair<>(flabel + label, bc.getPC() - 3));
                         bc.jmpc();
                     } else {
                         bc.pushi((int) pair.getValue());
@@ -204,21 +207,21 @@ public class compiler {
                     continue;
                 }
 
-                if (line.matches("call .*?")){ 
-                    String[] allinfor = line.split(" ");
-                    List<String> vara = new ArrayList<String>();
-                    int cnt = Integer.parseInt(allinfor[1]);
-                    for (int i = 2; i < allinfor.length - 1; i++)
-                        vara.add(allinfor[i]);
-                    String flabelCalled = allinfor[allinfor.length - 1];
-                    bc.pushi(bc.getPC() + 1);
-                    bc.add();
-                    for (String varai: vara){
-                        bc.pushi(Integer.parseInt(varai));
-                        bc.pushv()
-                    }
-                    continue;
-                }
+//                if (line.matches("call .*?")){
+//                    String[] allinfor = line.split(" ");
+//                    List<String> vara = new ArrayList<String>();
+//                    int cnt = Integer.parseInt(allinfor[1]);
+//                    for (int i = 2; i < allinfor.length - 1; i++)
+//                        vara.add(allinfor[i]);
+//                    String flabelCalled = allinfor[allinfor.length - 1];
+//                    bc.pushi(bc.getPC() + 1);
+//                    bc.add();
+//                    for (String varai: vara){
+//                        bc.pushi(Integer.parseInt(varai));
+//                        bc.pushv();
+//                    }
+//                    continue;
+//                }
                 // if (line.matches("callr .*?")){
                 //     String[] allinfor = line.split(" ");
                 //     List<String> vara = new ArrayList<String>();
@@ -344,6 +347,13 @@ public class compiler {
         catch (IOException e) {
             System.out.println("File not found!!!");
         }
+
+        for(Pair each: waitList) {
+            Pair pair = symbolTable.get(each.getKey());
+            int offset = (int) pair.getKey();
+            bc.setArr((int) each.getValue(), offset);
+        }
+        bc.writeToFile();
         output.close();
     }
 }

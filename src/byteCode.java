@@ -14,13 +14,31 @@ public class byteCode {
     private int stackPointer; //points to last item pushed in
     private int programCounter; //points to last byte written
     private Stack<Integer> frameStack; //points to first item in the frame
+    private DataOutputStream file;
     private ArrayList<Byte> output;
-    public byteCode() {
+    public byteCode(DataOutputStream outputFile) {
         stackPointer = -1;
         programCounter = -1;
         output = new ArrayList<>();
+        file = outputFile;
         frameStack = new Stack<Integer>();
         frameStack.push(0);
+    }
+
+    public void writeToFile() throws IOException {
+        for(byte each: output) {
+            file.writeByte(each);
+        }
+    }
+
+    public void setArr(int index, int offset) {
+        ByteBuffer buf = ByteBuffer.allocate(4);
+        buf.putInt(offset);
+        buf.flip();
+        byte[] arr = buf.array();
+        for (byte each: arr){
+            output.set(index++, each);
+        }
     }
 
     public int getPC() { //get program counter
@@ -105,7 +123,7 @@ public class byteCode {
         output.add((byte)70);
         ByteBuffer buf = ByteBuffer.allocate(4);
         buf.putInt(data);
-        buf.flip();
+//        buf.flip();
         byte[] arr = buf.array();
         for (byte each: arr){
             output.add(each);
