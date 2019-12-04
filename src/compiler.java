@@ -27,15 +27,15 @@ public class compiler {
         ArrayList<Pair> waitList = new ArrayList<>();
         String flabel = "main"; //label of current subroutine
 
-        bc.pushi(268435456);
-        bc.pushi(285212672);
-        bc.pushi(16777216);
+        bc.pushi(16);
+        bc.pushi(17);
+        bc.pushi(1);
         bc.call(0);
         bc.halt();
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                // System.out.println(line);
                 if (line.matches("//")){
                     continue;
                 }
@@ -71,7 +71,7 @@ public class compiler {
                         System.out.println("lab Error!");
                     }
                     String label = matcher.group(1);
-                    symbolTable.put(flabel + label, new Pair(bc.getPC(), "int"));
+                    symbolTable.put(flabel + label, new Pair(bc.getPC() + 1, "int"));
                     continue;
                 }
 
@@ -162,7 +162,7 @@ public class compiler {
                     Pair pair = symbolTable.get(flabel + label);
                     if(pair == null) {
                         bc.pushi(0);
-                        waitList.add(new Pair(bc.getPC(), flabel + label));
+                        waitList.add(new Pair(bc.getPC() - 3, flabel + label));
                         bc.jmp();
                     } else {
                         bc.pushi(pair.getKey());

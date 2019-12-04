@@ -33,13 +33,25 @@ public class byteCode {
     }
 
     public void setArr(int index, int offset) {
-        ByteBuffer buf = ByteBuffer.allocate(4);
-        buf.putInt(offset);
-        buf.flip();
-        byte[] arr = buf.array();
-        for (byte each: arr){
+        // ByteBuffer buf = ByteBuffer.allocate(4);
+        // buf.putInt(offset);
+        // buf.flip();
+        // byte[] arr = buf.array();
+        // for (byte each: arr){
+        //     output.set(index++, each);
+        // }
+        byte[] arr = IntToByte(offset);
+
+        for (byte each : arr){
             output.set(index++, each);
         }
+    }
+
+    public byte[] IntToByte (int data){
+        return new byte[] {(byte)((data) & 0xff),
+            (byte)((data >> 8) & 0xff),
+            (byte)((data >> 16) & 0xff),
+            (byte)((data >> 24) & 0xff)};
     }
 
     public int getPC() { //get program counter
@@ -122,32 +134,16 @@ public class byteCode {
 
     public void pushi(int data){
         output.add((byte)70);
-        byte byte1 = (byte)((data >> 24) & 0xff);
-        byte byte2 = (byte)((data >> 16) & 0xff);
-        byte byte3 = (byte)((data >> 8) & 0xff);
-        byte byte4 = (byte)((data >> 0) & 0xff);
+        // byte byte4 = (byte)((data >> 24) & 0xff);
+        // byte byte3 = (byte)((data >> 16) & 0xff);
+        // byte byte2 = (byte)((data >> 8) & 0xff);
+        // byte byte1 = (byte)((data) & 0xff);
+        
+        byte[] arr = IntToByte(data);
 
-        if (byte1 == (byte)0 && byte2 == (byte)0 && byte3 == (byte)0 && byte4 != (byte)0){
-            byte1 = byte4;
-            byte4 = (byte)0;
+        for (byte each : arr){
+            output.add(each);
         }
-        else if (byte1 == (byte)0 && byte2 == (byte)0 && byte3 != (byte)0 && byte4 != (byte)0){
-            byte1 = byte4;
-            byte2 = byte3;
-            byte4 = (byte)0;
-            byte3 = (byte)0;
-        }
-        else if (byte1 == (byte)0 && byte2 != (byte)0 && byte3 != (byte)0 && byte4 != (byte)0){
-            byte1 = byte4;
-            byte temp = byte2;
-            byte2 = byte3;
-            byte3 = temp;
-            byte4 = (byte)0;
-        }
-        output.add(byte1);
-        output.add(byte2);
-        output.add(byte3);
-        output.add(byte4);
         programCounter += 5;
         stackPointer++;
     }
