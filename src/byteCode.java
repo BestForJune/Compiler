@@ -122,17 +122,32 @@ public class byteCode {
 
     public void pushi(int data){
         output.add((byte)70);
-//        ByteBuffer buf = ByteBuffer.allocate(4);
-//        buf.putInt(data);
-//        buf.flip();
-//        byte[] arr = buf.array();
-        byte[] arr = {(byte)((data >> 24) & 0xff),
-                (byte)((data >> 16) & 0xff),
-                (byte)((data >> 8) & 0xff),
-                (byte)((data >> 0) & 0xff)};
-        for (byte each: arr){
-            output.add(each);
+        byte byte1 = (byte)((data >> 24) & 0xff);
+        byte byte2 = (byte)((data >> 16) & 0xff);
+        byte byte3 = (byte)((data >> 8) & 0xff);
+        byte byte4 = (byte)((data >> 0) & 0xff);
+
+        if (byte1 == (byte)0 && byte2 == (byte)0 && byte3 == (byte)0 && byte4 != (byte)0){
+            byte1 = byte4;
+            byte4 = (byte)0;
         }
+        else if (byte1 == (byte)0 && byte2 == (byte)0 && byte3 != (byte)0 && byte4 != (byte)0){
+            byte1 = byte4;
+            byte2 = byte3;
+            byte4 = (byte)0;
+            byte3 = (byte)0;
+        }
+        else if (byte1 == (byte)0 && byte2 != (byte)0 && byte3 != (byte)0 && byte4 != (byte)0){
+            byte1 = byte4;
+            byte temp = byte2;
+            byte2 = byte3;
+            byte3 = temp;
+            byte4 = (byte)0;
+        }
+        output.add(byte1);
+        output.add(byte2);
+        output.add(byte3);
+        output.add(byte4);
         programCounter += 5;
         stackPointer++;
     }
