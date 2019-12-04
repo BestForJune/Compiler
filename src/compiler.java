@@ -260,7 +260,7 @@ public class compiler {
                      continue;
                  }
                 if (line.matches("popv .*?")){
-                    Pattern pattern = Pattern.compile("popv ([a-zA-Z]+)");
+                    Pattern pattern = Pattern.compile("popv ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("popv Error!");
