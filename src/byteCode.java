@@ -13,6 +13,7 @@ public class byteCode {
         programCounter = -1;
         output = out;
         frameStack = new Stack<Integer>();
+        frameStack.push(0);
     }
 
     public int getPC() { //get program counter

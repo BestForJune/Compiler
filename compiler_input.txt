@@ -6,7 +6,7 @@ call 1 a addtest
 ret
 subr 1 addtest
 decl result int
-peek result
+peek result 0
 printv result
 pushv result
 pushi 10

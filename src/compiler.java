@@ -41,8 +41,7 @@ public class compiler {
                         bc.pushf(0);
                     }
                     symbolTable.put(flabel + symbol,
-                                    new Pair<>(bc.getStackPointer()  - bc.getfsp(),
-                                    dataType));
+                                    new Pair<>(bc.getStackPointer()  - bc.getfsp(), dataType));
                     // System.out.println(symbol);
                     // System.out.println(dataType);
                     continue;
@@ -72,6 +71,7 @@ public class compiler {
                     // System.out.println(flabel);
                     continue;
                 }
+
                 if (line.matches("retr .*?")){
                     Pattern pattern = Pattern.compile("retr ([A-Za-z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -81,9 +81,11 @@ public class compiler {
                     String var = matcher.group(1);
                     continue;
                 }
+
                 if (line.matches("ret")){
                     continue;
                 }
+
                 if (line.matches("printv .*?")){
                     Pattern pattern = Pattern.compile("printv ([a-zA-Z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -91,8 +93,25 @@ public class compiler {
                         System.out.println("printv Error!");
                     }
                     String var = matcher.group(1);
-
-                    // System.out.println(var);
+//                    symbolTable.forEach((key,value) -> System.out.println(key + ":" + value))
+                    Pair pair = symbolTable.get(flabel + var);
+                    String dataType = (String) pair.getValue();
+                    int offset = (int) pair.getKey();
+                    if(dataType.equals("int")) {
+                        bc.pushi(offset + bc.getfsp());
+                        bc.pushvi();
+                        bc.printi();
+                    }
+                    if(dataType.equals("short")) {
+                        bc.pushi(offset + bc.getfsp());
+                        bc.pushvs();
+                        bc.prints();
+                    }
+                    if(dataType.equals("float")) {
+                        bc.pushi(offset + bc.getfsp());
+                        bc.pushvf();
+                        bc.printf();
+                    }
                     continue;
                 }
 
@@ -126,8 +145,11 @@ public class compiler {
                         System.out.println("jmp Error!");
                     }
                     String label = matcher.group(1);
+                    bc.pushi(Integer.parseInt(label));
+                    bc.jmp();
                     continue;
                 }
+
                 if (line.matches("jmpc .*?")){
                     Pattern pattern = Pattern.compile("jmpc ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -135,20 +157,26 @@ public class compiler {
                         System.out.println("jmpc Error!");
                     }
                     String label = matcher.group(1);
+                    bc.pushi(Integer.parseInt(label));
+                    bc.jmpc();
                     continue;
                 }
+
                 if (line.matches("cmpe")){
                     bc.cmpe();
                     continue;
                 }
+
                 if (line.matches("cmplt")){
                     bc.cmplt();
                     continue;
                 }
+
                 if (line.matches("cmpgt")){
                     bc.cmpgt();
                     continue;
                 }
+
                 if (line.matches("call .*?")){ 
                     String[] allinfor = line.split(" ");
                     List<String> vara = new ArrayList<String>();
@@ -167,6 +195,7 @@ public class compiler {
                     String flabelCalled = allinfor[allinfor.length - 1];
                     continue;
                 }
+
                 if (line.matches("push[a-z] .*?")){
                    Pattern pattern = Pattern.compile("push([a-z]) ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -175,6 +204,15 @@ public class compiler {
                     }
                     String type = matcher.group(1);
                     String val = matcher.group(2);
+                    if(type.equals("i")) {
+                        bc.pushi(Integer.parseInt(val));
+                    }
+                    if(type.equals("s")) {
+                        bc.pushs(Short.parseShort(val));
+                    }
+                    if(type.equals("f")) {
+                        bc.pushf(Float.parseFloat(val));
+                    }
                     continue;
                 }
                 if (line.matches("popm .*?")){
@@ -184,6 +222,8 @@ public class compiler {
                          System.out.println("popm Error!");
                      }
                      int val = Integer.parseInt(matcher.group(1));
+                     bc.pushi(val);
+                     bc.popm(val);
                      continue;
                  }
                 if (line.matches("popv .*?")){
@@ -199,6 +239,8 @@ public class compiler {
                     String[] allinfor = line.split(" ");
                     String var = allinfor[1]; // variable
                     int val = Integer.parseInt(allinfor[2]);
+                    bc.pushi(val);
+                    bc.popv();
                     continue;
                  }
                 if (line.matches("poke .*?")){
