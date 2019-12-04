@@ -35,38 +35,38 @@ public class byteCode {
         return frameStack.peek();
     }
 
-    public void cmpe() throws IOException {
+    public void cmpe(){
         output.add((byte)132));
         programCounter++;
         stackPointer--;
     }
 
-    public void cmplt() throws IOException {
+    public void cmplt(){
         output.add((byte)136);
         programCounter++;
         stackPointer--;
     }
 
-    public void cmpgt() throws IOException {
+    public void cmpgt(){
         output.add((byte)140);
         programCounter++;
         stackPointer--;
     }
 
-    public void jmp() throws IOException {
+    public void jmp(){
         output.add((byte)36);
         programCounter++;
         stackPointer--;
     }
 
-    public void jmpc() throws IOException {
+    public void jmpc(){
         output.add((byte)40);
         programCounter++;
         stackPointer -= 2;
     }
 
     //val is the last item pushed into stack
-    public void call(int val) throws IOException {
+    public void call(int val){
         output.add((byte)44);
         programCounter++;
         frameStack.push(stackPointer - val - 1);
@@ -74,21 +74,21 @@ public class byteCode {
         // pc??
     }
 
-    public void ret() throws IOException {
+    public void ret(){
         output.add((byte)48);
         programCounter++;
         stackPointer = frameStack.pop();
         stackPointer--;
     }
 
-    public void pushc(char data) throws IOException {
+    public void pushc(char data){
         output.add((byte)68);
         output.add((byte)data);
         programCounter += 2;
         stackPointer++;
     }
 
-    public void pushs(short data) throws IOException {
+    public void pushs(short data){
         output.add((byte)69);
         ByteBuffer buf = ByteBuffer.allocate(2);
         buf.putShort(data);
@@ -101,7 +101,7 @@ public class byteCode {
         stackPointer++;
     }
 
-    public void pushi(int data) throws IOException {
+    public void pushi(int data){
         output.add((byte)70);
         ByteBuffer buf = ByteBuffer.allocate(4);
         buf.putInt(data);
@@ -114,7 +114,7 @@ public class byteCode {
         stackPointer++;
     }
 
-    public void pushf(float data) throws IOException {
+    public void pushf(float data){
         output.add((byte)71);
         ByteBuffer buf = ByteBuffer.allocate(4);
         buf.putFloat(data);
@@ -127,144 +127,144 @@ public class byteCode {
         stackPointer++;
     }
 
-    public void pushvc() throws IOException {
+    public void pushvc(){
         output.add((byte)72);
         programCounter++;
         //stackPointer?
     }
 
-    public void pushvs() throws IOException {
+    public void pushvs(){
         output.add((byte)73);
         programCounter++;
         //stackPointer?
     }
 
-    public void pushvi() throws IOException {
+    public void pushvi(){
         output.add((byte)74);
         programCounter++;
         //stackPointer?
     }
 
-    public void pushvf() throws IOException {
+    public void pushvf(){
         output.add((byte)75);
         programCounter++;
         //stackPointer?
     }
 
     //val is the number of items to be discarded
-    public void popm(int val) throws IOException {
+    public void popm(int val){
         output.add((byte)76);
         programCounter++;
         stackPointer -= val + 1; //including the top item number indicater
     }
 
-    public void popv() throws IOException {
+    public void popv(){
         output.add((byte)80);
         programCounter++;
         stackPointer -= 2;
     }
 
     //val is the number of item to be kept
-    public void popa(int val) throws IOException {
+    public void popa(int val){
         output.add((byte)77);
         programCounter++;
         stackPointer = frameStack.peek() + val - 1;
     }
 
-    public void peekc() throws IOException {
+    public void peekc(){
         output.add((byte)84);
         programCounter++;
     }
 
-    public void peeks() throws IOException {
+    public void peeks(){
         output.add((byte)85);
         programCounter++;
     }
 
-    public void peeki() throws IOException {
+    public void peeki(){
         output.add((byte)86);
         programCounter++;
     }
 
-    public void peekf() throws IOException {
+    public void peekf(){
         output.add((byte)87);
         programCounter++;
     }
 
-    public void pokec() throws IOException {
+    public void pokec(){
         output.add((byte)88);
         programCounter++;
     }
 
-    public void pokes() throws IOException {
+    public void pokes(){
         output.add((byte)89);
         programCounter++;
     }
 
-    public void pokei() throws IOException {
+    public void pokei(){
         output.add((byte)90);
         programCounter++;
     }
 
-    public void pokef() throws IOException {
+    public void pokef(){
         output.add((byte)91);
         programCounter++;
     }
 
-    public void swp() throws IOException {
+    public void swp(){
         output.add((byte)94);
         programCounter++;
     }
 
-    public void add((byte)) throws IOException {
+    public void add(){
         output.add((byte)100);
         programCounter++;
         stackPointer--;
     }
 
-    public void sub() throws IOException {
+    public void sub(){
         output.add((byte)104);
         programCounter++;
         stackPointer--;
     }
 
-    public void mul() throws IOException {
+    public void mul(){
         output.add((byte)108);
         programCounter++;
         stackPointer--;
     }
 
-    public void div() throws IOException {
+    public void div(){
         output.add((byte)112);
         programCounter++;
         stackPointer--;
     }
 
-    public void printc() throws IOException {
+    public void printc(){
         output.add((byte)144);
         programCounter++;
         stackPointer--;
     }
 
-    public void prints() throws IOException {
+    public void prints(){
         output.add((byte)145);
         programCounter++;
         stackPointer--;
     }
 
-    public void printi() throws IOException {
+    public void printi(){
         output.add((byte)146);
         programCounter++;
         stackPointer--;
     }
 
-    public void printf() throws IOException {
+    public void printf(){
         output.add((byte)147);
         programCounter++;
         stackPointer--;
     }
 
-    public void halt() throws IOException {
+    public void halt(){
         output.add((byte)0);
         programCounter++;
     }
