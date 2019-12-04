@@ -266,6 +266,8 @@ public class compiler {
                         System.out.println("popv Error!");
                     }
                     String var = matcher.group(1);//variable
+                    Pair pair = symbolTable.get(var);
+                    bc.pushi(pair.getKey());
                     continue;
                  }
                 if (line.matches("peek .*?")){
