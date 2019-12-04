@@ -12,11 +12,17 @@ public class compiler {
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
         DataOutputStream output = new DataOutputStream(new FileOutputStream(args[1]));
-        byteCode bc = new byteCode(output);
+        byteCode bc = new byteCode();
 
         //Map symbolTable
         // key: symbol; value: Pair <offset on the stack, data type>
         Map<String, Pair<Integer, String>> symbolTable = new HashMap<>();
+        // key: flabel; value: Pair <offset in bit code, count of variable>
+        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
+
+        // wait list of undefined jmp or call
+        // Pair <flabel + label, byte offset>
+        ArrayList<Pair<String, Integer>> waitList = new ArrayList<>();
         String flabel = "main"; //label of current subroutine
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
@@ -54,7 +60,7 @@ public class compiler {
                         System.out.println("lab Error!");
                     }
                     String label = matcher.group(1);
-                    symbolTable.put(flabel + label, new Pair<>(bc.getPC(), "int"));
+                    flabelTable.put(flabel + label, new Pair<>(bc.getPC(), 0));
                     continue;
                 }
 
@@ -145,8 +151,15 @@ public class compiler {
                         System.out.println("jmp Error!");
                     }
                     String label = matcher.group(1);
-                    bc.pushi(Integer.parseInt(label));
-                    bc.jmp();
+                    Pair pair = symbolTable.get(flabel + label);
+                    if(pair == null) {
+                        bc.pushi(0);
+                        waitList.add(new Pair<>(flabel + label, bc.getPC()));
+                        bc.jmp();
+                    } else {
+                        bc.pushi((int) pair.getValue());
+                        bc.jmp();
+                    }
                     continue;
                 }
 
@@ -157,8 +170,15 @@ public class compiler {
                         System.out.println("jmpc Error!");
                     }
                     String label = matcher.group(1);
-                    bc.pushi(Integer.parseInt(label));
-                    bc.jmpc();
+                    Pair pair = symbolTable.get(flabel + label);
+                    if(pair == null) {
+                        bc.pushi(0);
+                        waitList.add(new Pair<>(flabel + label, bc.getPC()));
+                        bc.jmpc();
+                    } else {
+                        bc.pushi((int) pair.getValue());
+                        bc.jmpc();
+                    }
                     continue;
                 }
 
@@ -239,7 +259,7 @@ public class compiler {
                     String[] allinfor = line.split(" ");
                     String var = allinfor[1]; // variable
                     int val = Integer.parseInt(allinfor[2]);
-                    Pair pair = symbolTable.get(var);
+                    Pair pair = symbolTable.get(flabel + var);
                     int offset = (int) pair.getKey();
                     String dataType = (String) pair.getValue();
                     if(dataType.equals("int")) {
@@ -263,7 +283,7 @@ public class compiler {
                     String[] allinfor = line.split(" ");
                     String var = allinfor[2]; // variable
                     int val = Integer.parseInt(allinfor[1]);
-                    Pair pair = symbolTable.get(var);
+                    Pair pair = symbolTable.get(flabel + var);
                     int offset = (int) pair.getKey();
                     String dataType = (String) pair.getValue();
                     if(dataType.equals("int")) {
