@@ -20,7 +20,7 @@ public class compiler {
         // key: symbol; value: Pair <offset on the stack, data type>
         Map<String, Pair> symbolTable = new HashMap<>();
         // key: flabel; value: Pair <offset in bit code, count of variable>
-//        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
+        // Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
 
         // wait list of undefined jmp or call
         // Pair <byte offset, flabel + label>
