@@ -30,7 +30,7 @@ public class compiler {
         bc.pushi(268435456);
         bc.pushi(285212672);
         bc.pushi(16777216);
-        bc.call(3);
+        bc.call(0);
         bc.halt();
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
@@ -246,6 +246,23 @@ public class compiler {
                     if(type.equals("f")) {
                         bc.pushf(Float.parseFloat(val));
                     }
+                    if (type.equals("v")){
+                        Pair pair = symbolTable.get(flabel + val);
+                        String datatype = pair.getValue();
+                        int offset = pair.getKey();
+                        if (datatype.equals("int")){
+                            bc.pushi(offset);
+                            bc.pushvi();
+                        }
+                        if (datatype.equals("short")){
+                            bc.pushi(offset);
+                            bc.pushvs();
+                        }
+                        if (datatype.equals("float")){
+                            bc.pushi(offset);
+                            bc.pushvf();
+                        }
+                    }
                     continue;
                 }
                 if (line.matches("popm .*?")){
@@ -266,8 +283,9 @@ public class compiler {
                         System.out.println("popv Error!");
                     }
                     String var = matcher.group(1);//variable
-                    Pair pair = symbolTable.get(var);
+                    Pair pair = symbolTable.get(flabel + var);
                     bc.pushi(pair.getKey());
+                    bc.popv();
                     continue;
                  }
                 if (line.matches("peek .*?")){
