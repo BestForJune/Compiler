@@ -1,8 +1,14 @@
 //import javafx.css.Match;
 
-import javafx.util.Pair;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 // import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,6 +34,9 @@ public class compiler {
             String line;
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
+                if (line.matches("//")){
+                    continue;
+                }
                 if(line.matches("decl[A-Za-z 0-9]+")) {
                     Pattern pattern = Pattern.compile("decl ([a-zA-Z]+) ([a-z]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -77,17 +86,15 @@ public class compiler {
                     // System.out.println(flabel);
                     continue;
                 }
-
-                if (line.matches("retr .*?")){
-                    Pattern pattern = Pattern.compile("retr ([A-Za-z]+)");
-                    Matcher matcher = pattern.matcher(line);
-                    if(!matcher.find()) {
-                        System.out.println("retr Error!");
-                    }
-                    String var = matcher.group(1);
-                    continue;
-                }
-
+                // if (line.matches("retr .*?")){
+                //     Pattern pattern = Pattern.compile("retr ([A-Za-z]+)");
+                //     Matcher matcher = pattern.matcher(line);
+                //     if(!matcher.find()) {
+                //         System.out.println("retr Error!");
+                //     }
+                //     String var = matcher.group(1);
+                //     continue;
+                // }
                 if (line.matches("ret")){
                     continue;
                 }
@@ -204,18 +211,23 @@ public class compiler {
                     for (int i = 2; i < allinfor.length - 1; i++)
                         vara.add(allinfor[i]);
                     String flabelCalled = allinfor[allinfor.length - 1];
+                    bc.pushi(bc.getPC() + 1);
+                    bc.add();
+                    for (String varai: vara){
+                        bc.pushi(Integer.parseInt(varai));
+                        bc.pushv()
+                    }
                     continue;
                 }
-                if (line.matches("callr .*?")){
-                    String[] allinfor = line.split(" ");
-                    List<String> vara = new ArrayList<String>();
-                    int cnt = Integer.parseInt(allinfor[1]);
-                    for (int i = 2; i < allinfor.length - 1; i++)
-                        vara.add(allinfor[i]);
-                    String flabelCalled = allinfor[allinfor.length - 1];
-                    continue;
-                }
-
+                // if (line.matches("callr .*?")){
+                //     String[] allinfor = line.split(" ");
+                //     List<String> vara = new ArrayList<String>();
+                //     int cnt = Integer.parseInt(allinfor[1]);
+                //     for (int i = 2; i < allinfor.length - 1; i++)
+                //         vara.add(allinfor[i]);
+                //     String flabelCalled = allinfor[allinfor.length - 1];
+                //     continue;
+                // }
                 if (line.matches("push[a-z] .*?")){
                    Pattern pattern = Pattern.compile("push([a-z]) ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
