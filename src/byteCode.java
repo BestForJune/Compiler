@@ -4,6 +4,7 @@ import javax.xml.crypto.Data;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -121,10 +122,14 @@ public class byteCode {
 
     public void pushi(int data){
         output.add((byte)70);
-        ByteBuffer buf = ByteBuffer.allocate(4);
-        buf.putInt(data);
+//        ByteBuffer buf = ByteBuffer.allocate(4);
+//        buf.putInt(data);
 //        buf.flip();
-        byte[] arr = buf.array();
+//        byte[] arr = buf.array();
+        byte[] arr = {(byte)((data >> 24) & 0xff),
+                (byte)((data >> 16) & 0xff),
+                (byte)((data >> 8) & 0xff),
+                (byte)((data >> 0) & 0xff)};
         for (byte each: arr){
             output.add(each);
         }
