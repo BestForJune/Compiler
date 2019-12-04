@@ -64,8 +64,8 @@ public class compiler {
                     continue;
                 }
 
-                if(line.matches("lab [A-Za-z]+")){
-                    Pattern pattern = Pattern.compile("lab ([A-Za-z]+)");
+                if(line.matches("lab [A-Za-z0-9]+")){
+                    Pattern pattern = Pattern.compile("lab ([A-Za-z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
                     if(!matcher.find()) {
                         System.out.println("lab Error!");
