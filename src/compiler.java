@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -114,8 +113,8 @@ public class compiler {
                     String var = matcher.group(1);
 //                    symbolTable.forEach((key,value) -> System.out.println(key + ":" + value))
                     Pair pair = symbolTable.get(flabel + var);
-                    String dataType = (String) pair.getValue();
-                    int offset = (int) pair.getKey();
+                    String dataType = pair.getValue();
+                    int offset = pair.getKey();
                     if(dataType.equals("int")) {
                         bc.pushi(offset);
                         bc.pushvi();
@@ -166,7 +165,7 @@ public class compiler {
                         waitList.add(new Pair(bc.getPC(), flabel + label));
                         bc.jmp();
                     } else {
-                        bc.pushi((int) pair.getKey());
+                        bc.pushi(pair.getKey());
                         bc.jmp();
                     }
                     continue;
@@ -185,7 +184,7 @@ public class compiler {
                         waitList.add(new Pair(bc.getPC() - 3, flabel + label));
                         bc.jmpc();
                     } else {
-                        bc.pushi((int) pair.getKey());
+                        bc.pushi(pair.getKey());
                         bc.jmpc();
                     }
                     continue;
@@ -274,8 +273,8 @@ public class compiler {
                     String var = allinfor[1]; // variable
                     int val = Integer.parseInt(allinfor[2]);
                     Pair pair = symbolTable.get(flabel + var);
-                    int offset = (int) pair.getKey();
-                    String dataType = (String) pair.getValue();
+                    int offset = pair.getKey();
+                    String dataType = pair.getValue();
                     if(dataType.equals("int")) {
                         bc.pushi(offset);
                         bc.pushi(val);
@@ -298,8 +297,8 @@ public class compiler {
                     String var = allinfor[2]; // variable
                     int val = Integer.parseInt(allinfor[1]);
                     Pair pair = symbolTable.get(flabel + var);
-                    int offset = (int) pair.getKey();
-                    String dataType = (String) pair.getValue();
+                    int offset = pair.getKey();
+                    String dataType = pair.getValue();
                     if(dataType.equals("int")) {
                         bc.pushi(offset);
                         bc.pushi(val);
@@ -349,8 +348,8 @@ public class compiler {
 
         for(Pair each: waitList) {
             Pair pair = symbolTable.get(each.getValue());
-            int offset = (int) pair.getKey();
-            bc.setArr((int) each.getKey(), offset);
+            int offset = pair.getKey();
+            bc.setArr(each.getKey(), offset);
         }
         bc.writeToFile();
         output.close();
