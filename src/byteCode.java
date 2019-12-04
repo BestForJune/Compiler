@@ -1,22 +1,24 @@
-import javax.xml.crypto.Data;
-
-// import sun.awt.image.ByteBandedRaster;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.nio.ByteBuffer;
 
+/**
+ * Class name:  byteCode
+ * Description: This class is to put byte operation into a byte array
+ *              and then finally write the entire array into output
+ *              file.
+ * Programmers: Zhengsen Fu fu216@purdue.edu
+ *              Yanjun Chen chen2620@purdue.edu
+ */
 public class byteCode {
-    // private DataOutputStream output;
     private int stackPointer; //points to last item pushed in
     private int programCounter; //points to last byte written
     private Stack<Integer> frameStack; //points to first item in the frame
-    private DataOutputStream file;
-    private ArrayList<Byte> output;
+    private DataOutputStream file; //output file pointer
+    private ArrayList<Byte> output; //list of byte to be outputted at the end fo the program
+
     public byteCode(DataOutputStream outputFile) {
         stackPointer = -1;
         programCounter = -1;
@@ -33,13 +35,6 @@ public class byteCode {
     }
 
     public void setArr(int index, int offset) {
-        // ByteBuffer buf = ByteBuffer.allocate(4);
-        // buf.putInt(offset);
-        // buf.flip();
-        // byte[] arr = buf.array();
-        // for (byte each: arr){
-        //     output.set(index++, each);
-        // }
         byte[] arr = IntToByte(offset);
 
         for (byte each : arr){
@@ -101,8 +96,7 @@ public class byteCode {
         output.add((byte)44);
         programCounter++;
         frameStack.push(stackPointer - val - 1);
-        stackPointer -= 2; //???
-        // pc??
+        stackPointer -= 2;
     }
 
     public void ret(){
@@ -134,11 +128,6 @@ public class byteCode {
 
     public void pushi(int data){
         output.add((byte)70);
-        // byte byte4 = (byte)((data >> 24) & 0xff);
-        // byte byte3 = (byte)((data >> 16) & 0xff);
-        // byte byte2 = (byte)((data >> 8) & 0xff);
-        // byte byte1 = (byte)((data) & 0xff);
-        
         byte[] arr = IntToByte(data);
 
         for (byte each : arr){

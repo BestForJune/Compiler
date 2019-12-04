@@ -10,6 +10,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class name:   compiler
+ * Description: This file contains main function
+ * Programmers: Zhengsen Fu fu216@purdue.edu
+ *              Yanjun Chen chen2620@purdue.edu
+ */
 public class compiler {
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
@@ -18,20 +24,23 @@ public class compiler {
 
         //Map symbolTable
         // key: symbol; value: Pair <offset on the stack, data type>
+        //                     Pair <int, String>
         Map<String, Pair> symbolTable = new HashMap<>();
-        // key: flabel; value: Pair <offset in bit code, count of variable>
-//        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
 
         // wait list of undefined jmp or call
         // Pair <byte offset, flabel + label>
         ArrayList<Pair> waitList = new ArrayList<>();
+
         String flabel = "main"; //label of current subroutine
 
+        // hard coded call to main function
         bc.pushi(16);
         bc.pushi(17);
         bc.pushi(1);
         bc.call(0);
         bc.halt();
+
+        // read every line in input text
         try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -47,7 +56,6 @@ public class compiler {
                     }
                     String symbol = matcher.group(1);
                     String dataType = matcher.group(2);
-//                    symbolTable.put(symbol, )
                     if(dataType.equals("short")) {
                         bc.pushs((short) 0);
                     }
@@ -59,8 +67,6 @@ public class compiler {
                     }
                     symbolTable.put(flabel + symbol,
                                     new Pair(bc.getStackPointer()  - bc.getfsp(), dataType));
-                    // System.out.println(symbol);
-                    // System.out.println(dataType);
                     continue;
                 }
 
@@ -81,13 +87,9 @@ public class compiler {
                     if(!matcher.find()) {
                         System.out.println("subr Error!");
                     }
-//                    int cnt = Integer.parseInt(matcher.group(1));
-//                    flabel = matcher.group(2);
-
-                    // System.out.println(cnt);
-                    // System.out.println(flabel);
                     continue;
                 }
+
                 // if (line.matches("retr .*?")){
                 //     Pattern pattern = Pattern.compile("retr ([A-Za-z]+)");
                 //     Matcher matcher = pattern.matcher(line);
@@ -97,6 +99,7 @@ public class compiler {
                 //     String var = matcher.group(1);
                 //     continue;
                 // }
+
                 if (line.matches("ret")){
                     bc.pushi(0);
                     bc.popa(0);
@@ -111,7 +114,6 @@ public class compiler {
                         System.out.println("printv Error!");
                     }
                     String var = matcher.group(1);
-//                    symbolTable.forEach((key,value) -> System.out.println(key + ":" + value))
                     Pair pair = symbolTable.get(flabel + var);
                     String dataType = pair.getValue();
                     int offset = pair.getKey();
@@ -220,6 +222,7 @@ public class compiler {
 //                    }
 //                    continue;
 //                }
+
                 // if (line.matches("callr .*?")){
                 //     String[] allinfor = line.split(" ");
                 //     List<String> vara = new ArrayList<String>();
@@ -229,6 +232,7 @@ public class compiler {
                 //     String flabelCalled = allinfor[allinfor.length - 1];
                 //     continue;
                 // }
+
                 if (line.matches("push[a-z] .*?")){
                    Pattern pattern = Pattern.compile("push([a-z]) ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -246,6 +250,8 @@ public class compiler {
                     if(type.equals("f")) {
                         bc.pushf(Float.parseFloat(val));
                     }
+
+                    // pushv
                     if (type.equals("v")){
                         Pair pair = symbolTable.get(flabel + val);
                         String datatype = pair.getValue();
@@ -265,6 +271,7 @@ public class compiler {
                     }
                     continue;
                 }
+
                 if (line.matches("popm .*?")){
                     Pattern pattern = Pattern.compile("popm ([0-9]+)");
                      Matcher matcher = pattern.matcher(line);
@@ -276,6 +283,7 @@ public class compiler {
                      bc.popm(val);
                      continue;
                  }
+
                 if (line.matches("popv .*?")){
                     Pattern pattern = Pattern.compile("popv ([a-zA-Z0-9]+)");
                     Matcher matcher = pattern.matcher(line);
@@ -288,6 +296,7 @@ public class compiler {
                     bc.popv();
                     continue;
                  }
+
                 if (line.matches("peek .*?")){
                     String[] allinfor = line.split(" ");
                     String var = allinfor[1]; // variable
@@ -312,6 +321,7 @@ public class compiler {
                     }
                     continue;
                  }
+
                 if (line.matches("poke .*?")){
                     String[] allinfor = line.split(" ");
                     String var = allinfor[2]; // variable
@@ -336,6 +346,7 @@ public class compiler {
                     }
                     continue;
                 }
+
                 if (line.matches("swp")){
                     bc.swp();
                     continue;
