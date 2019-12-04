@@ -36,7 +36,7 @@ public class byteCode {
     }
 
     public void cmpe(){
-        output.add((byte)132));
+        output.add((byte)132);
         programCounter++;
         stackPointer--;
     }
