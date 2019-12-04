@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -20,13 +19,13 @@ public class compiler {
 
         //Map symbolTable
         // key: symbol; value: Pair <offset on the stack, data type>
-        Map<String, Pair<Integer, String>> symbolTable = new HashMap<>();
+        Map<String, Pair> symbolTable = new HashMap<>();
         // key: flabel; value: Pair <offset in bit code, count of variable>
 //        Map<String, Pair<Integer, Integer>> flabelTable = new HashMap<>();
 
         // wait list of undefined jmp or call
-        // Pair <flabel + label, byte offset>
-        ArrayList<Pair<String, Integer>> waitList = new ArrayList<>();
+        // Pair <byte offset, flabel + label>
+        ArrayList<Pair> waitList = new ArrayList<>();
         String flabel = "main"; //label of current subroutine
 
         bc.pushi(268435456);
@@ -60,7 +59,7 @@ public class compiler {
                         bc.pushf(0);
                     }
                     symbolTable.put(flabel + symbol,
-                                    new Pair<>(bc.getStackPointer()  - bc.getfsp(), dataType));
+                                    new Pair(bc.getStackPointer()  - bc.getfsp(), dataType));
                     // System.out.println(symbol);
                     // System.out.println(dataType);
                     continue;
@@ -73,7 +72,7 @@ public class compiler {
                         System.out.println("lab Error!");
                     }
                     String label = matcher.group(1);
-                    symbolTable.put(flabel + label, new Pair<>(bc.getPC(), "int"));
+                    symbolTable.put(flabel + label, new Pair(bc.getPC(), "int"));
                     continue;
                 }
 
@@ -164,10 +163,10 @@ public class compiler {
                     Pair pair = symbolTable.get(flabel + label);
                     if(pair == null) {
                         bc.pushi(0);
-                        waitList.add(new Pair<>(flabel + label, bc.getPC()));
+                        waitList.add(new Pair(bc.getPC(), flabel + label));
                         bc.jmp();
                     } else {
-                        bc.pushi((int) pair.getValue());
+                        bc.pushi((int) pair.getKey());
                         bc.jmp();
                     }
                     continue;
@@ -183,10 +182,10 @@ public class compiler {
                     Pair pair = symbolTable.get(flabel + label);
                     if(pair == null) {
                         bc.pushi(0);
-                        waitList.add(new Pair<>(flabel + label, bc.getPC() - 3));
+                        waitList.add(new Pair(bc.getPC() - 3, flabel + label));
                         bc.jmpc();
                     } else {
-                        bc.pushi((int) pair.getValue());
+                        bc.pushi((int) pair.getKey());
                         bc.jmpc();
                     }
                     continue;
@@ -349,9 +348,9 @@ public class compiler {
         }
 
         for(Pair each: waitList) {
-            Pair pair = symbolTable.get(each.getKey());
+            Pair pair = symbolTable.get(each.getValue());
             int offset = (int) pair.getKey();
-            bc.setArr((int) each.getValue(), offset);
+            bc.setArr((int) each.getKey(), offset);
         }
         bc.writeToFile();
         output.close();
