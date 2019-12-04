@@ -98,17 +98,17 @@ public class compiler {
                     String dataType = (String) pair.getValue();
                     int offset = (int) pair.getKey();
                     if(dataType.equals("int")) {
-                        bc.pushi(offset + bc.getfsp());
+                        bc.pushi(offset);
                         bc.pushvi();
                         bc.printi();
                     }
                     if(dataType.equals("short")) {
-                        bc.pushi(offset + bc.getfsp());
+                        bc.pushi(offset);
                         bc.pushvs();
                         bc.prints();
                     }
                     if(dataType.equals("float")) {
-                        bc.pushi(offset + bc.getfsp());
+                        bc.pushi(offset);
                         bc.pushvf();
                         bc.printf();
                     }
@@ -239,14 +239,48 @@ public class compiler {
                     String[] allinfor = line.split(" ");
                     String var = allinfor[1]; // variable
                     int val = Integer.parseInt(allinfor[2]);
-                    bc.pushi(val);
-                    bc.popv();
+                    Pair pair = symbolTable.get(var);
+                    int offset = (int) pair.getKey();
+                    String dataType = (String) pair.getValue();
+                    if(dataType.equals("int")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.peeki();
+                    }
+                    if(dataType.equals("short")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.peeks();
+                    }
+                    if(dataType.equals("float")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.peekf();
+                    }
                     continue;
                  }
                 if (line.matches("poke .*?")){
                     String[] allinfor = line.split(" ");
                     String var = allinfor[2]; // variable
                     int val = Integer.parseInt(allinfor[1]);
+                    Pair pair = symbolTable.get(var);
+                    int offset = (int) pair.getKey();
+                    String dataType = (String) pair.getValue();
+                    if(dataType.equals("int")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.pokei();
+                    }
+                    if(dataType.equals("short")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.pokes();
+                    }
+                    if(dataType.equals("float")) {
+                        bc.pushi(offset);
+                        bc.pushi(val);
+                        bc.pokef();
+                    }
                     continue;
                 }
                 if (line.matches("swp")){
